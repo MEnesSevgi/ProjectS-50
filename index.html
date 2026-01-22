@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+    <meta charset="UTF-8">
+    <title>P R O J E C T S - 5 0</title>
+    
+
+  </head>
+    
+  <body>
+  <!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ProjectS-50 | Ultimate Flashlight Portfolio</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollToPlugin.min.js"></script>
+    <style>
+        :root {
+            --bg: #030303;
+            --primary: #00f2ff;
+            --secondary: #7000ff;
+            --accent: #ff007a;
+            --text: #ffffff;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; cursor: none !important; }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            overflow-x: hidden;
+            scroll-behavior: smooth;
+        }
+
+        /* --- SAAT TASARIMI --- */
+        #clock {
+            position: fixed;
+            top: 30px;
+            right: 40px;
+            font-family: 'Courier New', monospace;
+            font-size: 1.5rem;
+            color: var(--primary);
+            z-index: 1000000;
+            text-shadow: 0 0 10px var(--primary);
+            background: rgba(0, 0, 0, 0.5);
+            padding: 10px 20px;
+            border-radius: 10px;
+            border: 1px solid rgba(0, 242, 255, 0.2);
+            pointer-events: none;
+        }
+        #clock span { font-size: 1rem; opacity: 0.7; margin-left: 5px; }
+
+        #canvas-bg {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        #flashlight-cursor {
+            position: fixed;
+            width: 40px; height: 40px;
+            border: 2px solid var(--primary);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 999999; 
+            transform: translate(-50%, -50%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        #flashlight-cursor::after {
+            content: '';
+            width: 4px; height: 4px;
+            background: var(--primary);
+            border-radius: 50%;
+            box-shadow: 0 0 15px var(--primary);
+        }
+
+        .spotlight {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: 999998; 
+            background: radial-gradient(
+                circle 250px at var(--x, 50%) var(--y, 50%), 
+                rgba(0, 242, 255, 0.3) 0%, 
+                transparent 100%
+            );
+            mix-blend-mode: screen;
+        }
+
+        .hero {
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            perspective: 1000px;
+        }
+
+        /* Başlık animasyonu için karakter ayarları */
+        .main-title {
+            font-size: clamp(3rem, 10vw, 8rem);
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: -2px;
+            display: flex;
+            overflow: hidden;
+        }
+        .char {
+            display: inline-block;
+            background: linear-gradient(90deg, #fff, var(--primary), var(--secondary), #fff);
+            background-size: 200% auto;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            opacity: 0;
+            transform: translateY(100px);
+        }
+
+        .scroll-btn {
+            margin-top: 2rem;
+            padding: 18px 45px;
+            border: 2px solid var(--primary);
+            background: transparent;
+            color: white;
+            font-size: 1.2rem;
+            font-weight: bold;
+            border-radius: 50px;
+            transition: all 0.4s ease;
+            animation: pulse-glow 2s infinite ease-in-out;
+            letter-spacing: 1px;
+            z-index: 100;
+            opacity: 0; /* Başlangıçta gizli, başlık bitince gelecek */
+        }
+
+        @keyframes pulse-glow {
+            0%, 100% { box-shadow: 0 0 10px rgba(0, 242, 255, 0.2); }
+            50% { box-shadow: 0 0 30px rgba(0, 242, 255, 0.6); }
+        }
+
+        .scroll-btn:hover {
+            background: var(--primary);
+            color: black;
+            box-shadow: 0 0 50px var(--primary);
+            transform: scale(1.05);
+            animation: none;
+        }
+
+        .projects-section {
+            padding: 100px 5%;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 30px;
+            opacity: 0;
+            transform: translateY(50px);
+        }
+
+        .project-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 24px;
+            padding: 40px;
+            transition: border-color 0.3s, background 0.3s;
+            display: flex;
+            flex-direction: column;
+            transform-style: preserve-3d;
+        }
+
+        .project-card:hover {
+            border-color: var(--primary);
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        .project-number { color: var(--primary); font-weight: 800; font-size: 0.8rem; margin-bottom: 5px;}
+        .project-category { color: var(--accent); font-size: 0.7rem; text-transform: uppercase; font-weight: 700; margin-bottom: 10px; letter-spacing: 1px;}
+        .project-name { font-size: 1.8rem; margin-bottom: 20px; flex-grow: 1;}
+
+        .badge { align-self: flex-start; padding: 6px 14px; border-radius: 8px; font-size: 0.7rem; font-weight: 700; text-transform: uppercase; }
+        .badge-mobile { background: #ff4757; color: white; }
+        .badge-desktop { background: #2ed573; color: white; }
+        .badge-both { background: #3742fa; color: white; }
+
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.95);
+            backdrop-filter: blur(15px);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 20000;
+            opacity: 0;
+        }
+
+        .modal-content {
+            background: #0a0a0a;
+            border: 1px solid var(--primary);
+            padding: 50px;
+            border-radius: 35px;
+            max-width: 650px;
+            width: 90%;
+            transform: scale(0.8);
+            position: relative;
+        }
+
+        .close-modal { position: absolute; top: 25px; right: 30px; font-size: 2.5rem; color: #555; }
+        .close-modal:hover { color: var(--accent); }
+        .modal-desc { margin: 25px 0; line-height: 1.8; color: #bbb; font-size: 1.1rem; }
+        .modal-btn { display: inline-block; padding: 15px 35px; background: var(--primary); color: #000; text-decoration: none; font-weight: 800; border-radius: 12px; }
+
+        @media (max-width: 768px) { * { cursor: auto !important; } #flashlight-cursor, .spotlight, #clock { display: none; } }
+    </style>
+</head>
+<body>
+
+    <div id="clock">00:00:00<span>00</span></div>
+    <canvas id="canvas-bg"></canvas>
+    <div id="flashlight-cursor"></div>
+    <div class="spotlight"></div>
+
+    <section class="hero">
+        <h1 class="main-title" id="animatedTitle">ProjectS-50</h1>
+        <p id="sub-p" style="opacity: 0; letter-spacing: 5px; font-weight: 300; margin-top: 10px;">50 FİKİR / 50 PROJE / UZUN BİR SERÜVEN</p>
+        <button class="scroll-btn" id="hero-btn" onclick="showProjects()">PROJELERİ KEŞFET</button>
+    </section>
+
+    <div class="projects-section" id="projects"></div>
+
+    <div class="modal-overlay" id="modalOverlay">
+        <div class="modal-content" id="modalContent">
+            <span class="close-modal" onclick="closeModal()">&times;</span>
+            <span class="project-category" id="modalCategory">KATEGORİ</span>
+            <h2 id="modalTitle" style="font-size: 2.5rem;">Proje Başlığı</h2>
+            <p class="modal-desc" id="modalDescription">Açıklama yükleniyor...</p>
+            <a href="#" id="modalLink" target="_blank" class="modal-btn">PROJEYE GİT →</a>
+        </div>
+    </div>
+
+    <script>
+        // 1. SAAT FONKSİYONU
+        function updateClock() {
+            const now = new Date();
+            const h = String(now.getHours()).padStart(2, '0');
+            const m = String(now.getMinutes()).padStart(2, '0');
+            const s = String(now.getSeconds()).padStart(2, '0');
+            const ms = String(Math.floor(now.getMilliseconds() / 10)).padStart(2, '0');
+           document.getElementById('clock').innerHTML = `${h}:${m}:${s}`;
+        }
+        setInterval(updateClock, 1000);
+
+        // 2. BAŞLIK HARF ANİMASYONU
+        const titleContainer = document.getElementById('animatedTitle');
+        const text = titleContainer.innerText;
+        titleContainer.innerHTML = '';
+        
+        [...text].forEach(char => {
+            const span = document.createElement('span');
+            span.innerText = char;
+            span.className = 'char';
+            titleContainer.appendChild(span);
+        });
+
+        const tl = gsap.timeline();
+        tl.to(".char", {
+            opacity: 1,
+            y: 0,
+            duration: 0.8,
+            stagger: 0.05,
+            ease: "back.out(1.7)"
+        })
+        .to("#sub-p", { opacity: 0.7, duration: 1 }, "-=0.3")
+        .to("#hero-btn", { opacity: 1, duration: 0.5 }, "-=0.5");
+
+        // 3. CANVAS PARÇACIK SİSTEMİ
+        const canvas = document.getElementById('canvas-bg');
+        const ctx = canvas.getContext('2d');
+        let particles = [];
+        const spotlight = document.querySelector('.spotlight');
+        const cursor = document.getElementById('flashlight-cursor');
+
+        function resize() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resize);
+        resize();
+
+        class Particle {
+            constructor(x, y) {
+                this.x = x; this.y = y;
+                this.size = Math.random() * 2;
+                this.speedX = (Math.random() - 0.5) * 3;
+                this.speedY = (Math.random() - 0.5) * 3;
+                this.opacity = 1;
+            }
+            update() {
+                this.x += this.speedX; this.y += this.speedY;
+                this.opacity -= 0.008;
+            }
+            draw() {
+                ctx.fillStyle = `rgba(0, 242, 255, ${this.opacity})`;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+
+        window.addEventListener('mousemove', (e) => {
+            const x = e.clientX;
+            const y = e.clientY;
+            spotlight.style.setProperty('--x', x + 'px');
+            spotlight.style.setProperty('--y', y + 'px');
+            gsap.to(cursor, { x: x, y: y, duration: 0.05 });
+            if (Math.random() > 0.05) particles.push(new Particle(x, y));
+
+            if (document.getElementById('modalOverlay').style.display !== 'flex') {
+                document.querySelectorAll('.project-card').forEach(card => {
+                    const rect = card.getBoundingClientRect();
+                    const cardX = rect.left + rect.width / 2;
+                    const cardY = rect.top + rect.height / 2;
+                    const dist = Math.hypot(x - cardX, y - cardY);
+                    if (dist < 400) {
+                        const angleX = (y - cardY) / 20;
+                        const angleY = (cardX - x) / 20;
+                        gsap.to(card, { rotationX: angleX, rotationY: angleY, duration: 0.5 });
+                    } else {
+                        gsap.to(card, { rotationX: 0, rotationY: 0, duration: 0.5 });
+                    }
+                });
+            }
+        });
+
+        function animateParticles() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            particles.forEach((p, i) => {
+                p.update(); p.draw();
+                if (p.opacity <= 0) particles.splice(i, 1);
+            });
+            requestAnimationFrame(animateParticles);
+        }
+        animateParticles();
+
+        const projects = [
+    // --- CBS & ANALİZ (En Kapsamlı ve Teknik Olanlar) ---
+    { id: 1, name: "Marmara Bölgesi Turistik Konumlar", type: "both", category: "CBS", description: "Tübitak 2209-A Destekleme Ödülü kazanan, bölgenin turizm potansiyelini analiz eden bilimsel web haritası.", link: "https://muhammedenessevgi-coder.github.io/Marmara-Turistik-Destinasyonlar/" },
+    { id: 2, name: "Türkiye Koroplet Harita Üreticisi", type: "desktop", category: "CBS", description: "81 il bazında veri girişiyle anında tematik haritalar üreten profesyonel bir CBS motoru.", link: "https://menessevgi.github.io/Koroplet-Harita-81-il/" },
+    { id: 3, name: "Kocaeli Prestij Alanları Tespiti", type: "desktop", category: "Analiz", description: "Mekansal analiz yöntemleriyle Kocaeli'nin prestij odaklarının bilimsel tespiti.", link: "https://menessevgi.github.io/kocaeli_prestijli_alanlar/" },
+    { id: 4, name: "Türkiye Turistik Lokasyonları (6300+)", type: "both", category: "Analiz", description: "Devesa bir lokasyon verisinin haritalandırılması (Hata ayıklama aşamasında).", link: "https://menessevgi.github.io/Turkiye_turistik_destinasyonlar/" },
+    { id: 5, name: "Georeferans Teknik Çalışmaları", type: "desktop", category: "Teknik", description: "Raster haritaların koordinatlandırılması üzerine yapılan çalışma.", link: "https://menessevgi.github.io/Georeferans-Projeler/" },
+
+    // --- AFET YÖNETİMİ ---
+    { id: 6, name: "Kocaeli Toplanma Alanları Haritası", type: "both", category: "Afet Yönetimi", description: "Acil durum anında en yakın toplanma noktalarına erişim sağlayan hayati bir CBS uygulaması.", link: "https://kocaeli-toplanma-alanlari.github.io/Kocaeli-Acil-Durum-Toplanma-Alanlari/" },
+    { id: 7, name: "Türkiye Afet Rota Analiz Sistemi", type: "desktop", category: "Afet Yönetimi", description: "Afet noktasına en yakın illerin rotalarını otomatik hesaplayan karar destek aracı.", link: "https://kocaeli-toplanma-alanlari.github.io/Afetlerin-81-il-merkezine-uzakl-klar-Haritas-/" },
+    { id: 8, name: "Afet Bilgi Portalı", type: "both", category: "Afet Yönetimi", description: "Afet öncesi ve sonrası yapılması gerekenleri içeren interaktif rehber ve bilgi sayfası.", link: "https://kocaeli-toplanma-alanlari.github.io/Afet-Bilgi-Sayfas-/" },
+
+    // --- TARİH ---
+    { id: 9, name: "Küresel Salgınlar Atlası", type: "both", category: "Tarih", description: "İnsanlık tarihini etkileyen büyük salgınların çıkış noktaları ve küresel yayılım yollarını gösteren CBS çalışması.", link: "https://menessevgi.github.io/Kuresel-Salginlar-Atlasi/" },
+    { id: 10, name: "İslam'ın Altın Çağı Bilim İnsanları", type: "both", category: "Tarih", description: "Tarihe yön veren Müslüman bilim insanlarının çalışma alanlarını ve lokasyonlarını keşfeden atlas.", link: "https://menessevgi.github.io/islam-n-Altin-cagi-ve-Sonrasinda-Bilim-insanlari/" },
+    { id: 11, name: "Dünyayı Etkileyen 100 İnsan", type: "both", category: "Tarih", description: "İnsanlık tarihine yön veren 100 önemli şahsiyetin hayat bulduğu toprakları ifade etmektedir.", link: "https://menessevgi.github.io/Dunyayi-Etkiliyen-100-Insan-Atlasi/" },
+    { id: 12, name: " Etkili Bürokratlar Atlası(19. Yüzyıl'a Kadar)", type: "both", category: "Tarih", description: "19. yüzyıla kadar dünya tarihine yön veren devlet adamları ve bürokratların etki alanlarını inceleyen atlas.", link: "https://menessevgi.github.io/Etkili-Burokratlar-Atlasi/" },
+    { id: 13, name: "Tarihin Dönüm Noktaları: Savaşlar", type: "both", category: "Tarih", description: "Dünya tarihini değiştiren 110+ büyük savaşın gerçekleştiği konumlar ve stratejik detayları.", link: "https://menessevgi.github.io/TARIHIN-DONUM-NOKTALARI-SAVASLAR/" },
+    { id: 14, name: "Hulefa-i Raşidin Fetih Atlası", type: "both", category: "Tarih", description: "Dört Halife dönemindeki fetih hareketlerinin coğrafi sınırlarını görselleştiren çalışma.", link: "https://menessevgi.github.io/Hulefa-i-Rasidin-Fetih-Atlasi/" },
+    { id: 15, name: "Emeviler Dönemi Fetih Atlası", type: "both", category: "Tarih", description: "Emevi Devleti'nin sınırlarını genişlettiği fetih hareketlerini ve dönemin stratejik noktalarını gösteren harita.", link: "https://menessevgi.github.io/Emeviler-D-nemi-Fetih-Atlasi/" },
+    { id: 16, name: "Türk Devletleri Tarihsel Etki Alanları", type: "both", category: "Tarih", description: "Türk devletlerinin tarih boyunca hüküm sürdüğü coğrafyalarda etki sınırlarını gösteren atlas.", link: "https://menessevgi.github.io/Turk-Devletleri-Etki-Alanlar-Harita/" },
+    { id: 17, name: "Nizamiye Medreseleri Haritası", type: "desktop", category: "Tarih", description: "Selçuklu döneminin ilim merkezlerinin coğrafi yayılımını ve önemini gösteren bilgi sayfası.", link: "https://menessevgi.github.io/buyuk_selcuklu_ve_nizamiye_medreseleri/" },
+    { id: 18, name: "Kolomb’un Seyahatleri Atlası", type: "both", category: "Tarih", description: "Kristof Kolomb'un yeni dünyaya yaptığı seferlerin rotalarını ve ulaştığı konumları detaylandıran çalışma.", link: "https://menessevgi.github.io/Kolomb-Atlasi/" },
+    { id: 19, name: "Tarihin Dönüm Noktaları: İcatlar", type: "both", category: "Tarih", description: "Dünyayı değiştiren icatların ortaya çıktığı konumlar.", link: "https://menessevgi.github.io/Tarihin-Donum-Noktalari-Bilim-ve-icatlar/" },
+
+    // --- MİMARİ ---
+    { id: 20, name: "Mimar Sinan Eserleri Atlası", type: "both", category: "Mimari", description: "Mimar Sinan'ın 110 eserini Wikipedia entegrasyonu ile dünya haritası üzerinde sunan dijital envanter.", link: "https://menessevgi.github.io/Mimar-Sinan-Eserleri-/" },
+    { id: 21, name: "81 Mimarın 81 Eseri Haritası", type: "both", category: "Mimari", description: "Türkiye'nin 81 ilinde, 81 farklı mimarın imzasını taşıyan ikonik eserlerin mekânsal envanteri.", link: "https://menessevgi.github.io/81-mimar-81-eser-haritas-/" },
+    { id: 22, name: "Endülüs Mimari İzleri Atlası", type: "both", category: "Mimari", description: "Endülüs medeniyetinin mimari şaheserlerini konum ve özellik bazlı inceleyen harita çalışması.", link: "https://menessevgi.github.io/Endulus-Mimari-izler-Atlasi/" },
+    { id: 23, name: "Dünya Köprüler Atlası", type: "both", category: "Mimari", description: "Mühendislik harikası olan dünyaca ünlü köprülerin konumlarını ve yapısal özelliklerini sunan interaktif atlas.", link: "https://menessevgi.github.io/Dunya-Kopruler-Atlasi/" },
+    { id: 24, name: "Küresel Mimari Tarzlar Atlası", type: "both", category: "Mimari", description: "Dünyadaki farklı mimari akımların coğrafi dağılımını ve ikonik örneklerini içeren çalışma.", link: "https://menessevgi.github.io/Mimari-Tarzlar-Atlas/" },
+    { id: 25, name: "Dünya Stadyum Mimarisi Atlası", type: "both", category: "Mimari", description: "İkonik stadyumların mimari yapılarını harita üzerinde sunan sistem.", link: "https://menessevgi.github.io/Dunya-Stadyum-Mimarisi-Atlasi/" },
+    { id: 26, name: "Küresel Mimari Tarzlar Atlası", type: "both", category: "Mimari", description: "Farklı mimari stillerin küresel dağılımını gösteren çalışmadır.", link: "https://menessevgi.github.io/Mimari-Tarzlar-Atlas/" },
+
+    // --- EKONOMİ ---
+    { id: 27, name: "Küresel Altın Rezervleri Haritası", type: "both", category: "Ekonomi", description: "World Gold Council 2025 verileriyle hazırlanan, ülkelerin altın varlıklarını görselleştiren interaktif harita.", link: "https://menessevgi.github.io/Altin-Rezervlerinde-Zirvedeki-54-Ulke-ve-Kurulus/" },
+    { id: 28, name: "Ülkelerin Petrol Rezervleri Haritası", type: "both", category: "Ekonomi", description: "US EIA ve Wikipedia verileriyle küresel petrol rezervlerinin jeopolitik haritalandırılması.", link: "https://menessevgi.github.io/Petrol-Rezervleri-Haritasi/" },
+    { id: 29, name: "12 Sektör İçin Finans Yöneticisi", type: "desktop", category: "Ekonomi", description: "Teknoloji, lojistik, sağlık gibi 12 ana sektör için geliştirilmiş finansal takip aracı.", link: "https://menessevgi.github.io/finansyonetimi/" },
+    { id: 30, name: "Tarihin Dönüm Noktaları: Şirketler", type: "desktop", category: "Ekonomi", description: "Küresel ekonomiye yön veren dev şirketlerin kuruluş hikayeleri ve yayılım haritası.", link: "https://menessevgi.github.io/-RKETLER-ATLASI-EKONOM-K-D-N-M-NOKTALARI/" },
+    { id: 31, name: "Akaryakıt Tüketim Hesaplayıcı", type: "desktop", category: "Ekonomi", description: "Mesafe ve araç verilerine göre yakıt maliyeti hesaplayan pratik uygulama.", link: "https://menessevgi.github.io/akaryakit_maliyeti_hesaplayici/" },
+
+    // --- YÖNETİM ---
+    { id: 32, name: "Kurumsallaşma Değerlendirme Aracı", type: "desktop", category: "Yönetim", description: "Şirketlerin kurumsal olgunluk seviyelerini ölçen analiz ve raporlama platformu.", link: "https://menessevgi.github.io/kurumsal_organizasyon/" },
+    { id: 33, name: "Stok ve Çalışan Yönetim Sistemi", type: "desktop", category: "Yönetim", description: "İşletmeler için personel verimliliği ve depo stoklarını entegre şekilde yöneten localstorage türü web paneli.", link: "https://menessevgi.github.io/Material-Efficiency-System-Managed-Employee-System/" },
+
+    // --- KÜLTÜR & TURİZM ---
+    { id: 34, name: "Dünya Piramitleri Atlası", type: "both", category: "Kültür", description: "Mısır'dan Meksika'ya dünya üzerindeki tüm piramit yapılarını tek bir haritada toplayan küresel çalışma.", link: "https://menessevgi.github.io/Piramit_Atlasi/" },
+    { id: 35, name: "Dünya Gastronomi Atlası", type: "both", category: "Kültür", description: "140'tan fazla mutfak kültürünü ve yerel lezzet duraklarını harita üzerinde keşfedin.", link: "https://menessevgi.github.io/Gastronomi-Atlas/" },
+    { id: 36, name: "Küresel Fırın Ürünleri Haritası", type: "both", category: "Kültür", description: "Dünya mutfaklarının ekmek ve fırın ürünleri çeşitliliğini coğrafi bazda keşfeden lezzet atlası.", link: "https://menessevgi.github.io/Kuresel-Firin-Urunleri-Atlasi/" },
+    { id: 37, name: "Dünya Müzeler Atlası", type: "both", category: "Kültür", description: "Dünyanın en önemli müzelerinin konumlarını ve koleksiyon türlerini bir araya getiren dijital rehber.", link: "https://menessevgi.github.io/Muzeler-Atlasi/" },
+    { id: 38, name: "Türkiye Tarihi Alanlar Haritası", type: "desktop", category: "Turizm", description: "Anadolu'daki antik kent alanlarını göstermenin hedeflendiği harita çalışması.", link: "https://menessevgi.github.io/turkiye_tarihi_konumlar/" },
+
+    // --- LOJİSTİK & KAMU ---
+    { id: 39, name: "Kocaeli En Yakın İtfaiye Sistemi", type: "desktop", category: "Lojistik", description: "Seçilen acil durum konumuna göre en yakın itfaiye istasyonunu bulan ve rota çizen web sayfası.", link: "https://kocaeli-toplanma-alanlari.github.io/Kocaeli-itfaiye-istasyonlar-Haritas-/" },
+    { id: 40, name: "Türkiye Geneli Rota Oluşturucu", type: "desktop", category: "Lojistik", description: "Şehirler arası en kısa yol güzergahı analizi yapan web aracı.", link: "https://rotamatik.github.io/Rota-Plan/" },
+
+    // --- BİLGİ SİSTEMLERİ ---
+    { id: 41, name: "İnteraktif Ülkeler & Wikipedia", type: "both", category: "Bilgi Sistemi", description: "Ülkelerin güncel verilerini canlı harita üzerinden Wikipedia entegrasyonuyla sunan araç.", link: "https://menessevgi.github.io/ulkeler-Wikipedia-Entegrasyonu/" },
+    { id: 42, name: "En Fazla Ülke ve Bölgede Resmi Dil Konumunda Olan Diller Haritası", type: "both", category: "Bilgi Sistemi", description: "Hangi dillerin hangi ülkelerde resmi statüde olduğunu gösteren küresel analiz haritası.", link: "https://menessevgi.github.io/En-Fazla-Ulkede-ve-Bolgede-Resmi-Dil-Konumunda-Olan-Diller/" },
+    { id: 43, name: "Dünya Habercilik Atlası", type: "both", category: "Bilgi Sistemi", description: "Küresel haber ajanslarının ve medya merkezlerinin coğrafi yayılımını gösteren atlas.", link: "https://menessevgi.github.io/Dunya-Habercilik-Atlasi/" },
+
+    // --- DOĞA ---
+    { id: 44, name: "Göçmen Kuşların Mekânsal Dağılımı", type: "both", category: "Doğa", description: "Farklı kuş türlerinin küresel göç rotalarını ve konaklama duraklarını analiz eden biyocoğrafya çalışması.", link: "https://menessevgi.github.io/Gocmen-Kuslar/" },
+    { id: 45, name: "At Irklarının Küresel Dağılımı", type: "both", category: "Doğa", description: "Dünya üzerindeki farklı at ırklarının kökenlerini ve coğrafi yayılımlarını gösteren tematik harita.", link: "https://menessevgi.github.io/At-Irklari/" },
+
+    // --- TASARIM & VERİMLİLİK (Daha Spesifik/Araç Odaklı) ---
+    { id: 46, name: "Sunum İçin Ülke Haritaları", type: "desktop", category: "Tasarım", description: "Profesyonel sunumlar için ülke haritaları üreten araç.", link: "https://menessevgi.github.io/sunum_icin_ulke_haritalari/" },
+    { id: 47, name: "Sunum İçin 81 İl Haritası", type: "desktop", category: "Tasarım", description: "Türkiye'nin her ili için özelleştirilebilir harita tasarlama sayfası.", link: "https://menessevgi.github.io/sunum_icin_81_il_haritas-/" },
+    { id: 48, name: "Kişisel Finans Yöneticisi", type: "desktop", category: "Verimlilik", description: "Bireysel gelir-gider takibi ve bütçe planlaması sağlayan dijital asistan.", link: "https://menessevgi.github.io/kisisel_finans_yoneticisi/" },
+    { id: 49, name: "Haftalık Çalışma Programlayıcı", type: "desktop", category: "Verimlilik", description: "Zaman yönetimini optimize edebileceğiniz localstorage özelliğine sahip haftalık plan oluşturma uygulaması.", link: "https://menessevgi.github.io/haftalik_calisma_programi_hazirlayici/" },
+    { id: 50, name: "Dilekçe Yazma Yardımcısı", type: "desktop", category: "Verimlilik", description: "Resmi makamlar için standart formatta dilekçeleri hızlıca hazırlama hedefi taşıyan web sayfa çalışması.", link: "https://menessevgi.github.io/dilekce_yardimcisi/" }
+];
+
+        const container = document.getElementById('projects');
+        projects.forEach(p => {
+            const badgeClass = p.type === 'mobile' ? 'badge-mobile' : p.type === 'desktop' ? 'badge-desktop' : 'badge-both';
+            const badgeText = p.type === 'mobile' ? 'Mobile' : p.type === 'desktop' ? 'Masaüstü' : 'Mobil + Masaüstü';
+            const card = document.createElement('div');
+            card.className = 'project-card';
+            card.onclick = () => openModal(p);
+            card.innerHTML = `
+                <span class="project-number">PROJE ${p.id.toString().padStart(2, '0')}</span>
+                <span class="project-category">${p.category}</span>
+                <h3 class="project-name">${p.name}</h3>
+                <span class="badge ${badgeClass}">${badgeText}</span>
+            `;
+            container.appendChild(card);
+        });
+
+        function openModal(p) {
+            const overlay = document.getElementById('modalOverlay');
+            document.getElementById('modalTitle').innerText = p.name;
+            document.getElementById('modalCategory').innerText = p.category;
+            document.getElementById('modalDescription').innerText = p.description;
+            document.getElementById('modalLink').href = p.link;
+            overlay.style.display = 'flex';
+            gsap.to(overlay, { opacity: 1, duration: 0.4 });
+            gsap.to("#modalContent", { scale: 1, duration: 0.5, ease: "back.out(1.5)" });
+        }
+
+        function closeModal() {
+            gsap.to("#modalContent", { scale: 0.8, duration: 0.3 });
+            gsap.to("#modalOverlay", { opacity: 0, duration: 0.3, onComplete: () => {
+                document.getElementById('modalOverlay').style.display = 'none';
+            }});
+        }
+
+        function showProjects() {
+            gsap.to(window, { duration: 1.2, scrollTo: "#projects", ease: "power2.inOut" });
+            gsap.to(".projects-section", { opacity: 1, y: 0, duration: 1, delay: 0.3 });
+        }
+
+        document.getElementById('modalOverlay').addEventListener('click', (e) => {
+            if (e.target.id === 'modalOverlay') closeModal();
+        });
+    </script>
+</body>
+</html>
+    
+  </body>
+  
+</html>
